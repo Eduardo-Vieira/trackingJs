@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Crop</title>
+    <style>
+        video, .canvas{
+            position: absolute; border: 1px solid #cccccc;}.foto{ float:right; border: 1px solid red;}
+    </style>
+</head>
+<body>
+    <video id="video" width="310" height="230" preload autoplay loop muted ></video>
+    <canvas id="canvas" class="canvas" width="310" height="230"></canvas>
+    <canvas id="foto" class="foto" width="200" height="250"></canvas>
+
+    <script src="tracking-min.js"></script>
+    <script src="data/face-min.js"></script>
+    <script>
+        function init(){
+            const video = document.getElementById('video')
+            const canvas = document.getElementById('canvas')
+            const context = canvas.getContext('2d')
+            const tracker = new tracking.ObjectTracker('face')
+
+            const foto = document.getElementById('foto')
+            const ctx = foto.getContext("2d");
+
+            
+             tracking.track('#video',tracker, {camera:true})
+             tracker.on('track',event =>{
+                context.clearRect(0,0,canvas.width, canvas.height)
+                event.data.forEach(rect => {
+                    context.strokeStyle = '#05f14c'
+                    context.lineWidth = 2
+                    context.strokeRect(rect.x, rect.y, rect.width, rect.height)
+                    context.font = "14px Arial";
+                    context.fillStyle = "#ff0000";
+                    context.fillText(`x: ${rect.x}, w: ${rect.width}`, rect.x+rect.width+20,rect.y+20)
+                    context.fillText(`y: ${rect.y}, w: ${rect.height}`, rect.x+rect.width+20,rect.y+40)
+                    ctx.drawImage(video,rect.x+rect.width, rect.y+rect.height-55, 310, 230, 0, 0, 200, 250)
+
+                });
+             })
+        }
+        window.onload = init()
+    </script>
+</body>
+</html>
